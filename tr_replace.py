@@ -28,7 +28,14 @@ def normalize_arg(arg):
         return ""
     return arg
 
+def extentional_tag_parse(parsed):
+    for tag in parsed.filter_tags():
+        if tag.contents:
+            tag.contents = extentional_tag_parse(mw.parse(str(tag.contents)))
+    return parsed
+
 def replace_link(parsed):
+    parsed = extentional_tag_parse(parsed)
     for template in parsed.filter_templates(matches=lambda t: normalize_template_name(t.name) in ALIASES):
         if template.has('1'):
             string = template.get('1').value
@@ -70,7 +77,8 @@ def edit(page):
 def main():
     targets = TEMPLATE.getReferences(only_template_inclusion=True, namespaces=[0, 10])
     for page in targets:
-        edit(page)
+        if page != pywikibot.Page(SITE, 'Template:Translate/doc'):
+            edit(page)
 
 if __name__ == '__main__':
     SITE = pywikibot.Site()
