@@ -52,12 +52,12 @@ def replace_link(parsed):
 
 def autolink(string, link, site):
     if link:
-        link_arg = r"|link=1"
+        link_arg = r"|nolink"
     else:
         link_arg = "" 
     query_params = {
         "action": "expandtemplates",
-        "text": f"{{{{tr|nocat=1|notip=1{link_arg}|{string}}}}}",
+        "text": f"[[{{{{autolink|{string}{link_arg}}}}}]]",
         "prop": "wikitext",
         "format": "json"
     }
