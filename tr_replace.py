@@ -24,7 +24,7 @@ def normalize_template_name(name):
 
 def normalize_arg(arg):
     arg = str(arg).strip().replace("-", " ").lower()
-    if not str:
+    if not arg:
         return ""
     return arg
 
@@ -34,7 +34,7 @@ def extentional_tag_parse(parsed):
             tag.contents = extentional_tag_parse(mw.parse(str(tag.contents)))
     return parsed
 
-def replace_link(parsed):
+def replace_link(parsed, title):
     parsed = extentional_tag_parse(parsed)
     for template in parsed.filter_templates(matches=lambda t: normalize_template_name(t.name) in ALIASES):
         if template.has('1'):
@@ -47,28 +47,29 @@ def replace_link(parsed):
             link = True
         else:
             link = False
-        parsed.replace(template, autolink(string, link, SITE))
+        parsed.replace(template, autolink(string, link, title))
     return parsed
 
-def autolink(string, link, site):
+def autolink(string, link, title):
     if link:
-        text = f"[[{{{{autolink|{string}}}}}]]"
+        text = f"[[{{{{tr|raw=1|{string}}}}}]]"
     else:
-        text = f"{{{{autolink|{string}|nolink}}}}"
+        text = f"{{{{tr|link=1|raw=1|{string}|nolink}}}}"
     query_params = {
         "action": "expandtemplates",
         "text": text,
+        "title": title,
         "prop": "wikitext",
         "format": "json"
     }
-    data = site.simple_request(**query_params).submit()
+    data = SITE.simple_request(**query_params).submit()
     expanded = data['expandtemplates']['wikitext']
     return expanded
 
 def edit(page):
     orig = page.text
     parsed = mw.parse(orig)
-    parsed = replace_link(parsed)
+    parsed = replace_link(parsed, page.title())
     BOT.userPut(page, orig, str(parsed), summary=SUMMARY)
     '''if orig != str(parsed):
         page.text = str(parsed)

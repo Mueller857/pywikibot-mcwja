@@ -5,10 +5,11 @@ import pywikibot
 import mwparserfromhell as mw
 
 anchor_map = {
+    'その他のデバッグキー': 'ショートカット',
+    'デバッグキーの詳細': 'ショートカット'
 }
 
 text_map = {
-    '未使用の要素': '使用されていない要素'
 }
 
 def get_pages(page_name):
@@ -112,7 +113,7 @@ def t_main_seealso(template, target_name):
         else:
             text = None
         newlink = fix_link(title_parsed[0], title_parsed[1], text)
-        template.add(str(n), f'{newlink[0]}#{newlink[1]}' if newlink[1] else newlink[0])
+        template.add(str(n), f'{str(newlink[0])}#{str(newlink[1])}' if newlink[1] else str(newlink[0]))
         if newlink[2]:
             template.add('title'+str(n), str(newlink[2]))
         n += 1
@@ -129,7 +130,7 @@ def t_disambig(template, target_name, name):
             n += 2
             continue
         newlink = fix_link(title_parsed[0], title_parsed[1], None)
-        template.add(str(n), f'{newlink[0]}#{newlink[1]}' if newlink[1] else newlink[0])
+        template.add(str(n), f'{str(newlink[0])}#{str(newlink[1])}' if newlink[1] else str(newlink[0]))
         n += 2
     return template
 
