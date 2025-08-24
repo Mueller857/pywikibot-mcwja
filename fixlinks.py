@@ -87,7 +87,7 @@ def t_spritelink(template, target_name):
     
     newlink = fix_link(title_parsed[0], title_parsed[1], text)
 
-    title = f'{newlink[0]}#{newlink[1]}' if newlink[1] else newlink[0]
+    title = f'{str(newlink[0])}#{str(newlink[1])}' if str(newlink[1]) else str(newlink[0])
     if template.has('link'):
         template.add('link', title)
     else:
