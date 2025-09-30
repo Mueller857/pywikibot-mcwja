@@ -4,17 +4,17 @@ import re
 import pywikibot
 import mwparserfromhell as mw
 
-def make_skip_list():
-    skip_list = []
-    data = open('./scripts/userscripts/data/tr_skip.txt')
+def make_list(type):
+    list = []
+    data = open(f'./scripts/userscripts/data/tr_{type}.txt')
     data_lines = [s.rstrip() for s in data.readlines()]
     for l in data_lines:
         if not re.match(r'\s*--.*', l):
             match = re.search(r"\s*\['(.*?)'\]\s*=\s*'(.*?)'", l)
             if match:
                 k = match.group(1)
-                skip_list.append(k)
-    return skip_list
+                list.append(k)
+    return list
 
 def normalize_template_name(name):
     name = name.strip().replace(" ", "_")
@@ -41,20 +41,28 @@ def replace_link(parsed, title):
             string = template.get('1').value
         else:
             continue
-        if normalize_arg(string) in SKIP_LIST:
+        norm = normalize_arg(string)
+        if norm in SKIP_LIST:
             continue
+        if norm in USELINK_LIST:
+            uselink = True
+        else:
+            uselink = False
         if template.has('link'):
             link = True
         else:
             link = False
-        parsed.replace(template, autolink(string, link, title))
+        parsed.replace(template, autolink(string, link, title, uselink))
     return parsed
 
-def autolink(string, link, title):
+def autolink(string, link, title, uselink, site):
     if link:
-        text = f"[[{{{{tr|raw=1|{string}}}}}]]"
+        if uselink:
+            text = f"{{{{tr|raw=1|link=1|{string}}}}}"
+        else:
+            text = f"[[{{{{tr|raw=1|{string}}}}}]]"
     else:
-        text = f"{{{{tr|link=1|raw=1|{string}|nolink}}}}"
+        text = f"{{{{tr|raw=1|{string}}}}}"
     query_params = {
         "action": "expandtemplates",
         "text": text,
@@ -62,6 +70,8 @@ def autolink(string, link, title):
         "prop": "wikitext",
         "format": "json"
     }
+    if site:
+        SITE = site
     data = SITE.simple_request(**query_params).submit()
     expanded = data['expandtemplates']['wikitext']
     return expanded
@@ -86,6 +96,7 @@ if __name__ == '__main__':
     BOT = pywikibot.Bot()
     TEMPLATE = pywikibot.Page(SITE, 'Template:Translate')
     ALIASES = ['tr', 'translate']
-    SKIP_LIST = make_skip_list()
+    SKIP_LIST = make_list('skip')
+    USELINK_LIST = make_list('use_link')
     SUMMARY = r'{{t|tr}}を該当バージョンでの日本語訳で置き換え'
     main()
