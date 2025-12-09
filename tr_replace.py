@@ -40,7 +40,7 @@ def replace_link(parsed, title):
         if template.has('1'):
             string = template.get('1').value
         else:
-            continue
+            string = title
         norm = normalize_arg(string)
         if norm in SKIP_LIST:
             continue
@@ -52,10 +52,10 @@ def replace_link(parsed, title):
             link = True
         else:
             link = False
-        parsed.replace(template, autolink(string, link, title, uselink, SITE))
+        parsed.replace(template, autolink(string, link, uselink, SITE))
     return parsed
 
-def autolink(string, link, title, uselink, site):
+def autolink(string, link, uselink, site):
     if link:
         if uselink:
             text = f"{{{{tr|raw=1|link=1|{string}}}}}"
@@ -66,7 +66,6 @@ def autolink(string, link, title, uselink, site):
     query_params = {
         "action": "expandtemplates",
         "text": text,
-        "title": title,
         "prop": "wikitext",
         "format": "json"
     }
