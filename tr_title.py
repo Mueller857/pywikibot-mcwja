@@ -23,6 +23,10 @@ def move(page):
     try:
         if input(f'{page.title()}を{target_name}に動かしますか？[y/n]\n') == "y":
             return page.move(target_name, reason=SUMMARY_MOVE)
+    except pywikibot.exceptions.ArticleExistsConflictError as e:
+        if input(f'記事「{target_name}」は既に存在し、2回以上の履歴があります。\n削除して再度移動を試みますか？[y/n]\n') == "y":
+            target_page = pywikibot.Page(SITE, target_name)
+            target_page.delete(reason=SUMMARY_DELETE, prompt=False)
     except pywikibot.exceptions.PageRelatedError as e:
         print(f'ページの移動に失敗しました：{page.title()}→{target_name}\n')
     #return pywikibot.Page(SITE, target_name) # for debug, bypasses move failure 
@@ -93,6 +97,7 @@ if __name__ == '__main__':
     ALIASES = ['translate_title']
     SKIP_LIST = tr_replace.make_list('skip')
     SUMMARY_MOVE = '正式バージョンリリースに伴う移動'
+    SUMMARY_DELETE = '正式バージョンリリースに伴う移動に先立つ、移動先削除'
     SUMMARY_FIXREDIRECT = '移動に伴うリダイレクト修正'
     SUMMARY_UPDATE = r'{{t|translate title}}の除去とソートキーの追加'
     main()

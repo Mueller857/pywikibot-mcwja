@@ -52,7 +52,7 @@ def replace_link(parsed, title):
             link = True
         else:
             link = False
-        parsed.replace(template, autolink(string, link, title, uselink))
+        parsed.replace(template, autolink(string, link, title, uselink, SITE))
     return parsed
 
 def autolink(string, link, title, uselink, site):

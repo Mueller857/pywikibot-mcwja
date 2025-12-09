@@ -1,3 +1,2 @@
 -- paste content of Module:Autolink subpages if you want to use original link target like '板材#オーク|オークの板材',
 -- otherwise the link gonna be [[オークの板材]]
-		['copper nautilus armor'] = '銅のオウムガイの鎧',
