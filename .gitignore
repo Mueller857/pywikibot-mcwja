@@ -1,0 +1,9 @@
+# 環境設定類
+__pycache__/
+.vscode/
+!.vscode/settings.json
+*.code-workspace
+
+# 一時作業
+temp/
+data/
