@@ -18,7 +18,7 @@ def move(page):
     target_name = tr_replace.normalize_arg(target_name)
     if target_name in SKIP_LIST:
         return
-    target_name = tr_replace.autolink(target_name, False, page.title(), False, SITE) + afterroot
+    target_name = tr_replace.autolink(target_name, False, False, SITE) + afterroot
     
     try:
         if input(f'{page.title()}を{target_name}に動かしますか？[y/n]\n') == "y":
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     SITE = pywikibot.Site()
     BOT = pywikibot.Bot()
     TEMPLATE = pywikibot.Page(SITE, 'Template:Translate title')
-    ALIASES = ['translate_title']
+    ALIASES = ['translate_title', 'trt']
     SKIP_LIST = tr_replace.make_list('skip')
     SUMMARY_MOVE = '正式バージョンリリースに伴う移動'
     SUMMARY_DELETE = '正式バージョンリリースに伴う移動に先立つ、移動先削除'
