@@ -3,22 +3,41 @@ import mwparserfromhell as mw
 from scripts.userscripts import tr_replace
 from scripts.userscripts import fixlinks
 
+def get_title(title, first):
+    text = ""
+    if first != "":
+        text = f"{{{{#invoke:translate|title|type=upcoming|1={first}}}}}"
+    else:
+        text = "{{#invoke:translate|title|type=upcoming}}"
+    query_params = {
+        "action": "expandtemplates",
+        "title": title,
+        "text": text,
+        "prop": "wikitext",
+        "format": "json"
+    }
+    data = SITE.simple_request(**query_params).submit()
+    expanded = data['expandtemplates']['wikitext']
+    return expanded
+
 def move(page):
+    first = ''
+    title = page.title()
+
     parsed = mw.parse(page.text)
-    target_name = ""
-    afterroot = ""
     for template in parsed.filter_templates(matches=lambda t: tr_replace.normalize_template_name(t.name) in ALIASES):
         if template.has('1'):
-            target_name = template.get('1').value
+            first = en = template.get('1').value
         else:
-            if page.title().find('/') != -1:
-                target_name, afterroot = page.title().split('/', 1)
-            else:
-                target_name = page.title()
-    target_name = tr_replace.normalize_arg(target_name)
-    if target_name in SKIP_LIST:
+            en = title
+            if en.find('/') != -1:
+                en = en.split('/')[0]
+            if en.find(' (') != -1:
+                en = en.split(' (')[0]
+    en = tr_replace.normalize_arg(en)
+    if en in SKIP_LIST:
         return
-    target_name = tr_replace.autolink(target_name, False, False, SITE) + afterroot
+    target_name = get_title(title, first)
     
     try:
         if input(f'{page.title()}を{target_name}に動かしますか？[y/n]\n') == "y":

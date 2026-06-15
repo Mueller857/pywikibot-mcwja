@@ -41,6 +41,8 @@ def build_source_dict() -> dict: # ファイル別のサブ辞書を持つ辞書
     
     overrides_en: dict = json.loads(Path(OVERRIDES_EN).read_text(encoding="utf-8"))
     for file_name, strings in overrides_en.items():
+        if args.target_files != [] and file_name not in args.target_files:
+            continue
         for key, text in strings.items():
             result[file_name][key] = text
 
@@ -85,6 +87,8 @@ def build_dict(language_id: str, en_dict: dict) -> dict: # ファイル別のサ
 
     overrides: dict = json.loads(Path(OVERRIDES_JA).read_text(encoding="utf-8"))
     for file_name, strings in overrides.items():
+        if file_name not in result:
+            continue
         for key, text in strings.items():
             result[file_name][key] = text
 
@@ -151,7 +155,7 @@ def output_structure_template(en_dict: dict): # 辞書構造出力モードの�
     )
     print(f"構造ファイルを出力しました: {STRUCTURE_FILE} (翻訳キー数：{len(structure)})")
 
-KNOWN_FILES = ["15w14a.lang", "1.RV-Pre1.lang", "3D_Shareware_v1.34.json", "20w14infinite.json", "22w13oneblockatatime.json", "23w13a_or_b.json", "24w14potato.json", "25w14craftmine.json"]
+KNOWN_FILES = ["15w14a.lang", "1.RV-Pre1.lang", "3D_Shareware_v1.34.json", "20w14infinite.json", "22w13oneblockatatime.json", "23w13a_or_b.json", "24w14potato.json", "25w14craftmine.json", "26w14a.json"]
 
 CATEGORIES = ["BlockSprite", "ItemSprite", "BiomeSprite", "EffectSprite", "EntitySprite", "EnvSprite", "misc"]
 
@@ -210,7 +214,7 @@ def construct_lua(ja_dict: dict, en_dict: dict) -> str: # 取得した英・日�
                     lines.append(f"\t\t-- {file_name}")
 
                 for en_lower, ja_text in sorted(entries):
-                    en_escaped = en_lower.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ")
+                    en_escaped = en_lower.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ").replace("-", " ")
                     ja_escaped = re.sub(r'%(\d+\$)?s', '〇', ja_text.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "<br>"))
                     lines.append(f"\t\t['{en_escaped}'] = '{ja_escaped}',")
 
