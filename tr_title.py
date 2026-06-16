@@ -46,6 +46,7 @@ def move(page):
         if input(f'記事「{target_name}」は既に存在し、2回以上の履歴があります。\n削除して再度移動を試みますか？[y/n]\n') == "y":
             target_page = pywikibot.Page(SITE, target_name)
             target_page.delete(reason=SUMMARY_DELETE, prompt=False)
+            return page.move(target_name, reason=SUMMARY_MOVE)
     except pywikibot.exceptions.PageRelatedError as e:
         print(f'ページの移動に失敗しました：{page.title()}→{target_name}\n')
     #return pywikibot.Page(SITE, target_name) # for debug, bypasses move failure 
