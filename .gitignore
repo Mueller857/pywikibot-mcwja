@@ -6,4 +6,5 @@ __pycache__/
 
 # 一時作業
 temp/
-data/
+data/*
+!aftr

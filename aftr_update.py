@@ -15,6 +15,9 @@ LINK_OVERRIDES = BASE_DATA_PATH + "link_overrides.json" # リンク先が英名�
 CATEGORY_EXCECPTIONS = BASE_DATA_PATH + "category_exceptions.json" # 翻訳キーの第1部分から割り当てられるカテゴリとは異なる位置に配置したい文字列について、第2部分以降の前方一致文字列 → 配置先（misc.hoge.foo.barなど）の辞書のJSONとして指定できます。
 OVERRIDES_EN = BASE_DATA_PATH + "overrides_en.json" # 英語の追加・上書き文字列。翻訳キー → 英語 の辞書JSONで記述し、既存の翻訳キーを使った場合はその文字列を上書きする。
 OVERRIDES_JA = BASE_DATA_PATH + "overrides_ja.json" # 同上、日本語。
+NO_REDIRECT = BASE_DATA_PATH + "no_redirect.json" # "Ender"など、リダイレクトを作成すべきでない翻訳キーのリスト。
+NO_REGISTER = BASE_DATA_PATH + "no_register.json" # 通常要素の翻訳と被り、かつ内容が変わらないなどの理由で翻訳を登録すべきでない翻訳キーのリスト。
+SPLIT_ROWS = BASE_DATA_PATH + "split_rows.json" #行ごとに翻訳を分けるべき翻訳キーのリスト。これに含まれていない多行文字列は、改行が消去されます。
 
 load_dotenv() # .env からCrowdinのトークンを取得
 
@@ -40,11 +43,26 @@ def build_source_dict() -> dict: # ファイル別のサブ辞書を持つ辞書
         result[file_name][s["identifier"].strip('"')] = s["text"]
     
     overrides_en: dict = json.loads(Path(OVERRIDES_EN).read_text(encoding="utf-8"))
+
     for file_name, strings in overrides_en.items():
         if args.target_files != [] and file_name not in args.target_files:
             continue
         for key, text in strings.items():
             result[file_name][key] = text
+
+    no_register: list = json.loads(Path(NO_REGISTER).read_text(encoding="utf-8"))
+    split_rows: list = json.loads(Path(SPLIT_ROWS).read_text(encoding="utf-8"))
+    for file_name, strings in result.items():
+        for key, text in list(strings.items()):
+            if key in no_register:
+                del strings[key]
+            if key in split_rows:
+                rows = text.split('\n')
+                i = 0
+                for row in rows:
+                    result[file_name][key + f'.{str(i)}'] = row
+                    i += 1
+                del strings[key]
 
     return dict(result)
 
@@ -86,6 +104,7 @@ def build_dict(language_id: str, en_dict: dict) -> dict: # ファイル別のサ
             result[file_name] = parse_lang(response.text)
 
     overrides: dict = json.loads(Path(OVERRIDES_JA).read_text(encoding="utf-8"))
+
     for file_name, strings in overrides.items():
         if file_name not in result:
             continue
@@ -97,6 +116,20 @@ def build_dict(language_id: str, en_dict: dict) -> dict: # ファイル別のサ
         for key, text in strings.items():
             if key in link_overrides:
                 strings[key] = f'{en_dict[file_name][key]} ({link_overrides[key]})|{text}'
+    
+    no_register: list = json.loads(Path(NO_REGISTER).read_text(encoding="utf-8"))
+    split_rows: list = json.loads(Path(SPLIT_ROWS).read_text(encoding="utf-8"))
+    for file_name, strings in result.items():
+        for key, text in list(strings.items()):
+            if key in no_register:
+                del strings[key]
+            if key in split_rows:
+                rows = text.split('\n')
+                i = 0
+                for row in rows:
+                    result[file_name][key + f'.{str(i)}'] = row
+                    i += 1
+                del strings[key]
 
     return result
 
@@ -106,8 +139,12 @@ CATEGORY_PREFIXES = { # 第1部分からカテゴリを推定するための対�
     "item": "ItemSprite",
     "biome": "BiomeSprite",
     "effect": "EffectSprite",
+    "potion": "EffectSprite",
     "entity": "EntitySprite",
     "mob": "EntitySprite",
+    "feature": "EnvSprite",
+    "structure": "EnvSprite",
+    "dimension": "EnvSprite"
 }
 
 def output_structure_template(en_dict: dict): # 辞書構造出力モードのメイン動作
@@ -140,12 +177,12 @@ def output_structure_template(en_dict: dict): # 辞書構造出力モードの�
             placement = f"{category}.{first}"
         else:
             placement = category
-            if category != 'misc' and len(segments) > len_element:
+            if category != 'misc' and len(segments) > len_element and segments[2] != "name":
                 placement = 'misc.' + first
-            if category in category_exceptions:
-                for pattern in category_exceptions[category]:
-                    if key.startswith(pattern):
-                        placement = category_exceptions[category][pattern]
+        if category in category_exceptions:
+            for pattern in category_exceptions[category]:
+                if key.startswith(pattern):
+                    placement = category_exceptions[category][pattern]
 
         structure[key] = placement
 
@@ -153,7 +190,6 @@ def output_structure_template(en_dict: dict): # 辞書構造出力モードの�
         json.dumps(structure, ensure_ascii=False, indent=2),
         encoding="utf-8"
     )
-    print(f"構造ファイルを出力しました: {STRUCTURE_FILE} (翻訳キー数：{len(structure)})")
 
 KNOWN_FILES = ["15w14a.lang", "1.RV-Pre1.lang", "3D_Shareware_v1.34.json", "20w14infinite.json", "22w13oneblockatatime.json", "23w13a_or_b.json", "24w14potato.json", "25w14craftmine.json", "26w14a.json"]
 
@@ -201,6 +237,7 @@ def construct_lua(ja_dict: dict, en_dict: dict) -> str: # 取得した英・日�
     # Lua文字列を構築
     lines = ["return {"]
 
+
     for category in CATEGORIES:
         lines.append(f"\t['{category}'] = {{")
         file_map = organized.get(category, {})
@@ -228,26 +265,32 @@ def edit(result): # 構築したLuaでモジュールを置き換え
     BOT.userPut(MODULE, orig, result, summary=SUMMARY)
 
 def create_redirects(ja_dict: dict, en_dict: dict): # 英名がコンテンツページになっている場合に、その日本語訳がそこへのリダイレクトになっていなければ作成 or 修正
+    no_redirects: list = json.loads(Path(LINK_OVERRIDES).read_text(encoding="utf-8"))
     for file_name, strings in en_dict.items():
         for key, en_link in strings.items():
+            if key in no_redirects:
+                continue
             ja_link = ja_dict.get(file_name, {}).get(key)
             if '|' in ja_link:
-                en_link = ja_link.split('|')[0]
-            en_link = " ".join(word.capitalize() for word in en_link.split(" ")) # 語頭の大文字化
-            en_page = pywikibot.Page(SITE, en_link)
-            if not en_page.exists() or en_page.isRedirectPage():
-                continue
-            ja_page = pywikibot.Page(SITE, ja_link)
-            if not ja_page.exists() or (ja_page.isRedirectPage() and ja_page.getRedirectTarget() == en_page):
-                text = f'#転送 [[{en_link}]]'
-                BOT.userPut(ja_page, ja_page.text, text, summary=REDIRECT_SUMMARY)
+                en_link = ja_link = ja_link.split('|')[0]
+            try:
+                en_page = pywikibot.Page(SITE, en_link)
+                if not en_page.exists():
+                    continue
+                if en_page.isRedirectPage():
+                    en_link = en_page.getRedirectTarget().title()
+                ja_page = pywikibot.Page(SITE, ja_link)
+                if not ja_page.exists():
+                    text = f'#転送 [[{en_link}]]'
+                    BOT.userPut(ja_page, ja_page.text, text, summary=REDIRECT_SUMMARY)
+            except (pywikibot.exceptions.PageRelatedError, ValueError):
+                print(f'エラーによりスルー：{en_link}\n')
+                    
 
 def main():
     en_dict = build_source_dict()
     ja_dict = build_dict("ja", en_dict)
-    if args.output_structure_template:
-        output_structure_template(en_dict)
-        return
+    output_structure_template(en_dict)
     result = construct_lua(ja_dict, en_dict)
     edit(result)
     create_redirects(ja_dict, en_dict)
@@ -257,10 +300,10 @@ if __name__ == '__main__':
     BOT = pywikibot.Bot()
     #MODULE = pywikibot.Page(SITE, 'モジュール:サンドボックス/Müller857') 
     MODULE = pywikibot.Page(SITE, 'Module:Autolink/Joke')
+    #SUMMARY = '例外確認のためのテスト'
     SUMMARY = 'Crowdinからの更新'
     REDIRECT_SUMMARY = '翻訳変更・追加によるリダイレクト作成'
     parser = argparse.ArgumentParser()
     parser.add_argument('--target_files', nargs='*', default=[], help='辞書に登録するファイル名を1つ以上指定します。省略した場合、すべてのファイルを登録します。')
-    parser.add_argument('--output_structure_template', action='store_true', help=f'辞書構造ファイルを {STRUCTURE_FILE} として出力します。編集は行いません。')
     args = parser.parse_args()
     main()

@@ -1,0 +1,50 @@
+{
+    "23w13a_or_b.json": {
+        "block.minecraft.golden_chest": "Golden Chest",
+        "feature.minecraft.lunar_base": "Lunar Base"
+    },
+    "24w14potato.json": {
+        "block.minecraft.expired": "Expired",
+        "block.minecraft.charred": "Charred",
+        "item.resin.impurities.raw": "Impurities",
+        "item.resin.clarity.raw": "Clarity",
+        "item.resin.quality.raw": "Quality",
+        "item.minecraft.poisonous_potato_plant.rumbled.line2.raw": "is a plant.",
+        "entity.minecraft.raw_mega_spud": "Mega Spud",
+        "entity.minecraft.posionous_potato_zombie": "Poisonous Potato Zombie",
+        "entity.minecraft.potato_mob": "Potato Mob",
+        "entity.minecraft.potato_sheep": "Potato Sheep",
+        "biome.minecraft.curruption": "Corruption",
+        "feature.minecraft.hash_well": "Hash Well",
+        "feature.minecraft.potato_geode": "Potato Geode",
+        "feature.minecraft.potato_tree": "Potato Tree",
+        "structure.minecraft.colosseum": "Colosseum",
+        "structure.minecraft.potato_mineshaft": "Potato Mineshaft",
+        "structure.minecraft.potato_village": "Potato Village",
+        "structure.minecraft.ruined_portatol": "Ruined Portatol",
+        "dimension.minecraft.potato": "Poisonous Potato Dimension",
+        
+        "key.potato": "Potato (キー割り当て)",
+        "itemGroup.potatoes": "Potatoes (タブ名)"
+    },
+    "25w14craftmine.json": {
+        "block.minecraft.mob_trophy": "Mob Trophy",
+        "block.minecraft.sky_disambig": "Sky (ブロック)",
+        "item.minecraft.mine": "Mine (アイテム)",
+        "item.minecraft.mine_ingredient.pillager": "Mine Ingredient: Pillagers",
+        "item.minecraft.mine_ingredient.vindicator": "Mine Ingredient: Vindicators",
+        "item.minecraft.mine_ingredient.evoker": "Mine Ingredient: Evokers",
+        "item.minecraft.mine_ingredient.ravager": "Mine Ingredient: Ravagers",
+        "item.minecraft.mine_ingredient.illusioner": "Mine Ingredient: Illusioners",
+        "biome.minecraft.hub": "Hub",
+        "effect.minecraft.shazboots_disambig": "Shazboots! (ステータス効果)",
+        "structure.minecraft.mine_start": "Mine Start",
+        "structure.minecraft.start_platform": "Start Platform",
+        "structure.minecraft.mine_exit": "Mine Exit",
+        "dimension.minecraft.mine": "Mine (ディメンション)",
+        "misc.term.mine": "Mine",
+        "misc.term.special_encounter_mine": "Special Encounter Mine",
+        "misc.term.special_mine": "Special Mine",
+        "misc.term.special_event": "Special Event"
+    }
+}

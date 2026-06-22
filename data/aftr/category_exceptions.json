@@ -1,0 +1,29 @@
+{
+    "BlockSprite": {
+        "block.minecraft.set_spawn": "misc.block",
+        "block.minecraft.dropper.lunar": "EnvSprite"
+    },
+    "ItemSprite": {
+        "item.exchange_value": "misc.item",
+        "item.minecraft.lingering_potion.effect": "ItemSprite",
+        "item.minecraft.potion.effect": "ItemSprite",
+        "item.minecraft.splash_potion.effect": "ItemSprite"
+    },
+    "BiomeSprite": {},
+    "EffectSprite": {
+        "potion.moveSlowdown.postfix": "ItemSprite",
+        "potion.weakness.postfix": "ItemSprite",
+        "potion.confusion.postfix": "ItemSprite",
+        "potion.invisibility.postfix": "ItemSprite",
+        "potion.poison.postfix": "ItemSprite"
+    },
+    "EntitySprite": {
+        "entity.minecraft.mega_spud": "misc.entity",
+        "entity.minecraft.villager.traitor": "EntitySprite",
+        "entity.minecraft.crafting_action": "misc.entity",
+        "entity.minecraft.punch": "misc.entity"
+    },
+    "EnvSprite": {},
+    "misc": {
+    }
+}

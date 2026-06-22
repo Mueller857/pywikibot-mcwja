@@ -1,0 +1,49 @@
+{
+    "23w13a_or_b.json": {
+        "block.minecraft.golden_chest": "金のチェスト",
+        "feature.minecraft.lunar_base": "月面基地",
+
+        "biome.minecraft.the_moon": "The Moon|月"
+    },
+    "24w14potato.json": {
+        "block.minecraft.expired": "期限切れの",
+        "block.minecraft.charred": "焦げた",
+        "item.resin.impurities.raw": "不純物",
+        "item.resin.clarity.raw": "透明度",
+        "item.resin.quality.raw": "品質",
+        "item.minecraft.poisonous_potato_plant.rumbled.line2.raw": "はスパイのようだ。",
+        "entity.minecraft.raw_mega_spud": "メガジャガイモ",
+        "entity.minecraft.posionous_potato_zombie": "青くなったジャガイモゾンビ",
+        "entity.minecraft.potato_mob": "ジャガイモ系Mob",
+        "entity.minecraft.potato_sheep": "ジャガイモヒツジ",
+        "biome.minecraft.curruption": "腐敗の地",
+        "feature.minecraft.hash_well": "ハッシュの井戸",
+        "feature.minecraft.potato_geode": "ジャガイモジオード",
+        "feature.minecraft.potato_tree": "ジャガイモの木",
+        "structure.minecraft.colosseum": "コロシアム",
+        "structure.minecraft.potato_mineshaft": "ジャガイモの廃坑",
+        "structure.minecraft.potato_village": "ジャガイモの村",
+        "structure.minecraft.ruined_portatol": "荒廃したポーテトル",
+        "dimension.minecraft.potato": "青くなったジャガイモディメンション"
+    },
+    "25w14craftmine.json": {
+        "block.minecraft.mob_trophy": "Mobのトロフィー",
+        "block.minecraft.sky_disambig": "Sky (ブロック)|空",
+        "item.minecraft.mine": "Mine (アイテム)|マイン",
+        "item.minecraft.mine_ingredient.pillager": "Mine Ingredient|マイン素材（ピリジャー）",
+        "item.minecraft.mine_ingredient.vindicator": "Mine Ingredient|マイン素材（ヴィンディケーター）",
+        "item.minecraft.mine_ingredient.evoker": "Mine Ingredient|マイン素材（エヴォーカー）",
+        "item.minecraft.mine_ingredient.ravager": "Mine Ingredient|マイン素材（ラヴェジャー）",
+        "item.minecraft.mine_ingredient.illusioner": "Mine Ingredient|マイン素材（イリュージョナー）",
+        "biome.minecraft.hub": "ハブ",
+        "effect.minecraft.shazboots_disambig": "Shazboots! (ステータス効果)|シャズブーツ！",
+        "structure.minecraft.mine_start": "マイン入場台",
+        "structure.minecraft.start_platform": "マイン入場台",
+        "structure.minecraft.mine_exit": "マイン脱出口",
+        "dimension.minecraft.mine": "Mine (ディメンション)|マイン",
+        "misc.term.mine": "マイン",
+        "misc.term.special_encounter_mine": "特殊マイン",
+        "misc.term.special_mine": "特殊マイン",
+        "misc.term.special_event": "特殊イベント"
+    }
+}
